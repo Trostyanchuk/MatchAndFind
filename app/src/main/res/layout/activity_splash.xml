@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:styled="http://schemas.android.com/apk/res-auto">
+
+    <data>
+
+        <variable
+            name="model"
+            type="com.matchandfind.ui.model.SplashViewModel" />
+    </data>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+
+        <com.matchandfind.ui.widget.TypefaceTextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/start_label"
+            android:layout_margin="30dp"
+            android:paddingBottom="80dp"
+            android:text="@string/welcome_text"
+            android:layout_centerHorizontal="true"
+            android:textColor="@color/colorTextMain"
+            android:gravity="center"
+            android:autoText="false"
+            android:textSize="@dimen/splash_screen_activity"
+            styled:customTypeface="@string/RobotoLight" />
+
+        <com.matchandfind.ui.widget.TypefaceTextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:id="@+id/generate_label"
+            android:layout_below="@+id/start_label"
+            android:paddingBottom="80dp"
+            android:text="@{model.generateEnabled ? @string/generate_label : @string/generate_progress }"
+            android:textColor="@color/colorTextMain"
+            android:textSize="@dimen/splash_screen_activity"
+            android:onClick="@{model.generateItems}"
+            android:clickable="@{model.generateEnabled}"
+            android:focusable="@{model.generateEnabled}"
+            styled:customTypeface="@string/RobotoLight"/>
+
+    </RelativeLayout>
+</layout>

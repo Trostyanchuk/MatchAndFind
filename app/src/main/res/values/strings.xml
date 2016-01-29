@@ -1,0 +1,14 @@
+<resources>
+    <string name="app_name">MatchAndFind</string>
+
+    <string name="welcome_text">Welcome to MatchAndCatch! Here you can easy find friend to talk just choosing it from list and pressing \"Like\". If someone chosen by you also likes you - congratulations! Just find his/her on map and go!</string>
+    <string name="generate_label">Generate and start!</string>
+    <string name="generate_progress">Generating, please, wait...</string>
+
+    <!-- -->
+    <string name="persons_label">Persons</string>
+    <string name="map_label">Map</string>
+    <string name="dislike_label">dislike</string>
+    <string name="like_label">like</string>
+
+</resources>

@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:styled="http://schemas.android.com/apk/res-auto">
+
+    <data>
+
+        <variable
+            name="model"
+            type="com.matchandfind.ui.model.ResultsViewModel" />
+    </data>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/vp_navigation_height"
+            android:orientation="horizontal">
+
+            <com.matchandfind.ui.widget.TypefaceTextView
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:text="@string/persons_label"
+                android:textSize="@dimen/vp_navigation_text_size"
+                android:onClick="@{model.onUsersClick}"
+                styled:customTypeface="@string/RobotoRegular"/>
+
+            <com.matchandfind.ui.widget.TypefaceTextView
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:text="@string/map_label"
+                android:textSize="@dimen/vp_navigation_text_size"
+                android:onClick="@{model.onMapClick}"
+                styled:customTypeface="@string/RobotoRegular"/>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/vp_navigation_spinner_height"
+            android:orientation="horizontal">
+            <View
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="#c9f0be" />
+            <View
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"/>
+
+        </LinearLayout>
+
+        <android.support.v4.view.ViewPager
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:id="@+id/fragment_view_pager"
+            android:setAdapter="@{model.getVPFragmentsAdapter}"/>
+
+    </LinearLayout>
+</layout>
