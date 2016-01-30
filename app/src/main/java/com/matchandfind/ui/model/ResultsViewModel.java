@@ -6,7 +6,11 @@ import android.support.v4.app.FragmentManager;
 import android.view.View;
 
 import com.matchandfind.BR;
+import com.matchandfind.model.Person;
 import com.matchandfind.ui.adapter.VPFragmentsAdapter;
+import com.matchandfind.ui.fragment.listeners.OnUpdatePersonsListListener;
+
+import java.util.List;
 
 public class ResultsViewModel extends BaseObservable {
 
@@ -61,6 +65,11 @@ public class ResultsViewModel extends BaseObservable {
 
     public VPFragmentsAdapter getVPFragmentsAdapter() {
         return mVPFragmentsAdapter;
+    }
+
+    public void updateFragmentsWithList(List<Person> persons) {
+        ((OnUpdatePersonsListListener) mVPFragmentsAdapter.getItem(0)).onPersonsListUpdated(persons);
+        ((OnUpdatePersonsListListener) mVPFragmentsAdapter.getItem(1)).onPersonsListUpdated(persons);
     }
 
     public interface ItemChangeListener {

@@ -13,7 +13,9 @@ import com.matchandfind.MatchAndFindApp;
 import com.matchandfind.R;
 import com.matchandfind.databinding.FragmentPersonsBinding;
 import com.matchandfind.model.Person;
+import com.matchandfind.ui.activity.FragmentActionsListener;
 import com.matchandfind.ui.adapter.PersonsAdapter;
+import com.matchandfind.ui.fragment.listeners.OnUpdatePersonsListListener;
 import com.matchandfind.ui.model.PersonViewModel;
 import com.matchandfind.ui.model.PersonsListViewModel;
 
@@ -25,7 +27,7 @@ import rx.Observer;
 import rx.Subscriber;
 import rx.schedulers.Schedulers;
 
-public class PersonFragment extends Fragment implements Observer {
+public class PersonFragment extends Fragment implements OnUpdatePersonsListListener{
 
     private PersonsListViewModel mListViewModel;
     private FragmentPersonsBinding mBinding;
@@ -49,33 +51,15 @@ public class PersonFragment extends Fragment implements Observer {
     @Override
     public void onStart() {
         super.onStart();
-        Observable.create(new Observable.OnSubscribe<Object>() {
-            @Override
-            public void call(Subscriber<? super Object> subscriber) {
-                List<Person> personList = MatchAndFindApp.getDbManager().getPersons();
-                List<PersonViewModel> personViewModels = new ArrayList<>();
-                for (Person person : personList) {
-                    personViewModels.add(new PersonViewModel(person));
-                }
-                mPersonsAdapter.setPersonsList(personViewModels);
-            }
-        }).subscribeOn(Schedulers.newThread()).subscribe(this);
-    }
-
-
-    @Override
-    public void onCompleted() {
-        Log.d("", "");
+        mPersonsAdapter.setPersonsList(new ArrayList<PersonViewModel>());
     }
 
     @Override
-    public void onError(Throwable e) {
-        Log.d("", "");
+    public void onPersonsListUpdated(List<Person> personList) {
+        List<PersonViewModel> personViewModels = new ArrayList<>();
+        for (Person person : personList) {
+            personViewModels.add(new PersonViewModel(person));
+        }
+        mPersonsAdapter.setPersonsList(personViewModels);
     }
-
-    @Override
-    public void onNext(Object o) {
-        Log.d("", "");
-    }
-
 }

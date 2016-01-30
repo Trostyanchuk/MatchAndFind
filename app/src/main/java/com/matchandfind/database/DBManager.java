@@ -1,5 +1,7 @@
 package com.matchandfind.database;
 
+import android.app.Application;
+
 import com.matchandfind.MatchAndFindApp;
 import com.matchandfind.database.model.DBPerson;
 import com.matchandfind.model.Person;
@@ -7,10 +9,15 @@ import com.matchandfind.model.Person;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.inject.Inject;
+
 import io.realm.Realm;
 import io.realm.RealmResults;
 
 public class DBManager implements IDBManager {
+
+    @Inject
+    Application mAppContext;
 
     @Override
     public void savePersons(List<Person> persons) {
@@ -47,6 +54,6 @@ public class DBManager implements IDBManager {
     }
 
     private Realm getInstance() {
-        return Realm.getInstance(MatchAndFindApp.getApp());
+        return Realm.getInstance(mAppContext);
     }
 }

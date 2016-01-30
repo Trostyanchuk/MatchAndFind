@@ -6,17 +6,19 @@ import android.os.Bundle;
 
 import com.matchandfind.MatchAndFindApp;
 import com.matchandfind.R;
+import com.matchandfind.database.IDBManager;
 import com.matchandfind.databinding.ActivitySplashBinding;
 import com.matchandfind.model.Person;
+import com.matchandfind.network.INetworkManager;
+import com.matchandfind.network.wrappers.PersonsExtendedCallbackWrapper;
+import com.matchandfind.network.wrappers.RefreshSuccessCallbackWrapper;
 import com.matchandfind.ui.model.SplashViewModel;
 import com.matchandfind.utils.JSONUtil;
 import com.matchandfind.utils.PreferencesUtil;
 
-import org.testpackage.test_sdk.android.testlib.API;
-import org.testpackage.test_sdk.android.testlib.interfaces.PersonsExtendedCallback;
-import org.testpackage.test_sdk.android.testlib.interfaces.SuccessCallback;
-
 import java.util.List;
+
+import javax.inject.Inject;
 
 import rx.Observable;
 import rx.Subscriber;
@@ -25,14 +27,19 @@ import rx.schedulers.Schedulers;
 
 public class SplashScreenActivity extends BaseActivity {
 
+    @Inject
+    INetworkManager networkManager;
+    @Inject
+    IDBManager dbManager;
+
     private SplashViewModel mSplashModel;
     private ActivitySplashBinding mBindingObject;
     private Subscription subscription;
-    private PersonsExtendedCallback mPersonsExtendedCallback = new PersonsExtendedCallback() {
+    private PersonsExtendedCallbackWrapper mPersonsExtendedCallback = new PersonsExtendedCallbackWrapper() {
         @Override
         public void onResult(String persons) {
             List<Person> personsList = JSONUtil.getPersonsListFromJSOSNStr(persons);
-            MatchAndFindApp.getDbManager().savePersons(personsList);
+            dbManager.savePersons(personsList);
             openResultsActivity();
         }
 
@@ -41,10 +48,10 @@ public class SplashScreenActivity extends BaseActivity {
             mSplashModel.updateUIWithError(reason);
         }
     };
-    private SuccessCallback mSuccessCallback = new SuccessCallback() {
+    private RefreshSuccessCallbackWrapper mSuccessCallback = new RefreshSuccessCallbackWrapper() {
         @Override
         public void onSuccess() {
-            API.INSTANCE.getPersons(0, mPersonsExtendedCallback);
+            networkManager.getPersonsJSON(mPersonsExtendedCallback);
         }
     };
     private SplashViewModel.GenerationActionListener mGeneratorActionListener = new SplashViewModel.GenerationActionListener() {
@@ -87,7 +94,7 @@ public class SplashScreenActivity extends BaseActivity {
             @Override
             public void call(Subscriber<? super Object> subscriber) {
                 mSplashModel.updateUIWithProgress();
-                API.INSTANCE.refreshPersons(mSuccessCallback);
+                networkManager.refreshPersons(mSuccessCallback);
             }
         }).subscribeOn(Schedulers.newThread()).subscribe();
     }

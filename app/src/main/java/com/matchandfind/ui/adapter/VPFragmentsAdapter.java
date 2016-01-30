@@ -4,10 +4,13 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 
+import com.matchandfind.ui.activity.FragmentActionsListener;
 import com.matchandfind.ui.fragment.MapsFragment;
 import com.matchandfind.ui.fragment.PersonFragment;
 
-public class VPFragmentsAdapter extends FragmentPagerAdapter{
+public class VPFragmentsAdapter extends FragmentPagerAdapter {
+
+    private static final int COUNT = 2;
 
     public VPFragmentsAdapter(FragmentManager fm) {
         super(fm);
@@ -31,6 +34,6 @@ public class VPFragmentsAdapter extends FragmentPagerAdapter{
 
     @Override
     public int getCount() {
-        return 2;
+        return COUNT;
     }
 }

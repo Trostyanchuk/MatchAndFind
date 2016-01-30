@@ -33,13 +33,20 @@ public class PersonsAdapter extends RecyclerView.Adapter<PersonsAdapter.PersonsV
     @Override
     public void onBindViewHolder(PersonsViewHolder holder, int position) {
         holder.mBinding.setPerson(personsList.get(position));
-//        Picasso.with(holder.mBinding..getContext()).load(v).into(imageView);
     }
 
     public void setPersonsList(List<PersonViewModel> personsList) {
         this.personsList = new ArrayList<>(personsList);
         notifyDataSetChanged();
     }
+
+//    private List<PersonViewModel> getViewModelsForPersonsList(List<Person> personList) {
+//        List<PersonViewModel> personViewModels = new ArrayList<>();
+//        for (Person person : personList) {
+//            personViewModels.add(new PersonViewModel(person));
+//        }
+//        return personViewModels;
+//    }
 
     @BindingAdapter("bind:imageUrl")
     public static void loadImage(final ImageView imageView, String v) {

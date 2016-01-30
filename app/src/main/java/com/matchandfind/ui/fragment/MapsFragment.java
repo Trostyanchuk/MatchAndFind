@@ -15,10 +15,12 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.matchandfind.MatchAndFindApp;
 import com.matchandfind.R;
 import com.matchandfind.model.Person;
+import com.matchandfind.ui.activity.FragmentActionsListener;
+import com.matchandfind.ui.fragment.listeners.OnUpdatePersonsListListener;
 
 import java.util.List;
 
-public class MapsFragment extends Fragment {
+public class MapsFragment extends Fragment implements OnUpdatePersonsListListener {
 
     public static MapsFragment getInstance() {
         return new MapsFragment();
@@ -31,15 +33,6 @@ public class MapsFragment extends Fragment {
             mMap = googleMap;
             mMap.getUiSettings().setMyLocationButtonEnabled(true);
             mMap.getUiSettings().setAllGesturesEnabled(true);
-
-            List<Person> personList = MatchAndFindApp.getDbManager().getPersons();
-            for (Person person : personList) {
-                LatLng sydney = new LatLng(person.getLat(), person.getLon());
-                mMap.addMarker(new MarkerOptions().position(sydney)
-                        .title(person.getStatus())
-                        .draggable(true));
-                mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
-            }
         }
     };
 
@@ -56,5 +49,21 @@ public class MapsFragment extends Fragment {
         }
 
         return root;
+    }
+
+    @Override
+    public void onPersonsListUpdated(List<Person> personList) {
+        setPersonsListOnMap(personList);
+    }
+
+    private void setPersonsListOnMap(List<Person> persons) {
+        if (persons == null) return;
+        for (Person person : persons) {
+            LatLng sydney = new LatLng(person.getLat(), person.getLon());
+            mMap.addMarker(new MarkerOptions().position(sydney)
+                    .title(person.getStatus())
+                    .draggable(true));
+            mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
+        }
     }
 }
