@@ -14,14 +14,10 @@
     <android.support.v7.widget.CardView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical">
-
-        <ProgressBar
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_marginBottom="@dimen/card_footer_height"
-            android:visibility="@{person.imageDownloaded ? View.GONE : View.VISIBLE}" />
+        android:elevation="10dp"
+        android:orientation="vertical"
+        android:paddingBottom="20dp"
+        styled:cardUseCompatPadding="true">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -30,12 +26,25 @@
             android:orientation="vertical"
             android:padding="10dp">
 
-
-            <ImageView
+            <RelativeLayout
                 android:layout_width="match_parent"
-                android:layout_height="@dimen/card_photo_height"
-                styled:imageUrl="@{person.image}"
-                android:scaleType="centerCrop" />
+                android:layout_height="@dimen/card_photo_height">
+
+                <ImageView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:scaleType="centerCrop"
+                    styled:imageUrl="@{person.image}" />
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:scaleType="centerCrop"
+                    android:src="@drawable/ic_like"
+                    android:visibility="@{person.wasPersonLike ? View.VISIBLE : View.INVISIBLE}"
+                    android:layout_centerInParent="true" />
+            </RelativeLayout>
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -47,6 +56,8 @@
                     android:layout_height="match_parent"
                     android:layout_weight="1"
                     android:gravity="center"
+                    android:onClick="@{person.clickOnPerson}"
+                    android:tag="@{person.LIKE_TAG}"
                     android:text="@string/like_label"
                     android:textSize="@dimen/card_label_size"
                     styled:customTypeface="@string/RobotoLight" />
@@ -56,11 +67,14 @@
                     android:layout_height="match_parent"
                     android:layout_weight="1"
                     android:gravity="center"
+                    android:onClick="@{person.clickOnPerson}"
+                    android:tag="@{person.DISLIKE_TAG}"
                     android:text="@string/dislike_label"
                     android:textSize="@dimen/card_label_size"
                     styled:customTypeface="@string/RobotoLight" />
 
             </LinearLayout>
+
 
         </LinearLayout>
     </android.support.v7.widget.CardView>

@@ -6,11 +6,13 @@ import java.util.List;
 
 public interface IDBManager {
 
+    void clearDB();
+
     void savePersons(List<Person> persons);
 
     List<Person> getPersons();
 
-    void removePerson();
+    void removePerson(int externalId);
 
     void updatePerson();
 }

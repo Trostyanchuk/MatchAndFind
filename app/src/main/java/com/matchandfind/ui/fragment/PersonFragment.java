@@ -4,30 +4,38 @@ import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.matchandfind.MatchAndFindApp;
 import com.matchandfind.R;
+import com.matchandfind.database.IDBManager;
 import com.matchandfind.databinding.FragmentPersonsBinding;
 import com.matchandfind.model.Person;
+import com.matchandfind.network.APIStates;
+import com.matchandfind.network.INetworkManager;
 import com.matchandfind.ui.activity.FragmentActionsListener;
+import com.matchandfind.ui.adapter.OnPersonClickActionListener;
 import com.matchandfind.ui.adapter.PersonsAdapter;
-import com.matchandfind.ui.fragment.listeners.OnUpdatePersonsListListener;
+import com.matchandfind.ui.fragment.listener.OnPersonsUpdatesListeners;
 import com.matchandfind.ui.model.PersonViewModel;
 import com.matchandfind.ui.model.PersonsListViewModel;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import rx.Observable;
-import rx.Observer;
-import rx.Subscriber;
-import rx.schedulers.Schedulers;
+import javax.inject.Inject;
 
-public class PersonFragment extends Fragment implements OnUpdatePersonsListListener{
+import rx.Observer;
+
+public class PersonFragment extends Fragment implements Observer, OnPersonsUpdatesListeners, OnPersonClickActionListener {
+
+    @Inject
+    INetworkManager networkManager;
+
+    @Inject
+    IDBManager dbManager;
 
     private PersonsListViewModel mListViewModel;
     private FragmentPersonsBinding mBinding;
@@ -40,6 +48,7 @@ public class PersonFragment extends Fragment implements OnUpdatePersonsListListe
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        MatchAndFindApp.getInstance().getComponent().inject(this);
         mBinding = DataBindingUtil.inflate(inflater, R.layout.fragment_persons, container, false);
         mListViewModel = new PersonsListViewModel();
         mBinding.setPersonsModel(mListViewModel);
@@ -51,15 +60,50 @@ public class PersonFragment extends Fragment implements OnUpdatePersonsListListe
     @Override
     public void onStart() {
         super.onStart();
-        mPersonsAdapter.setPersonsList(new ArrayList<PersonViewModel>());
+
+        loadPersonsToAdapter();
+    }
+
+    private void loadPersonsToAdapter() {
+        List<Person> personList = dbManager.getPersons();
+        List<PersonViewModel> personViewModels = new ArrayList<>();
+        for (Person person : personList) {
+            personViewModels.add(new PersonViewModel(person, this));
+        }
+        mPersonsAdapter.setPersonsList(personViewModels);
     }
 
     @Override
-    public void onPersonsListUpdated(List<Person> personList) {
-        List<PersonViewModel> personViewModels = new ArrayList<>();
-        for (Person person : personList) {
-            personViewModels.add(new PersonViewModel(person));
+    public void onCompleted() {
+
+    }
+
+    @Override
+    public void onError(Throwable e) {
+        //TODO set text view with error
+    }
+
+    @Override
+    public void onNext(Object o) {
+        //stub
+    }
+
+    @Override
+    public void onPersonUpdate(Person person) {
+        if (person.getStatus().equals(APIStates.REMOVED)) {
+            mPersonsAdapter.removeItem(person);
         }
-        mPersonsAdapter.setPersonsList(personViewModels);
+    }
+
+    @Override
+    public void onListUpdate() {
+
+    }
+
+    @Override
+    public void onPersonClick(String action, Person person) {
+        mPersonsAdapter.removeItem(person);
+        dbManager.removePerson(person.getId());
+        ((FragmentActionsListener)getActivity()).updateList();
     }
 }

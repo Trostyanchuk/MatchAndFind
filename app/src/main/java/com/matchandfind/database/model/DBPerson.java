@@ -5,21 +5,11 @@ import io.realm.annotations.PrimaryKey;
 
 public class DBPerson extends RealmObject{
 
-//    @PrimaryKey
-//    private int id;
     private int externalId;
     private float lat;
     private float lon;
     private String photo;
     private String status;
-
-//    public int getId() {
-//        return id;
-//    }
-//
-//    public void setId(int id) {
-//        this.id = id;
-//    }
 
     public float getLat() {
         return lat;

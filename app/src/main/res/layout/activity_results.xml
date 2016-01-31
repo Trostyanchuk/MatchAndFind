@@ -49,11 +49,12 @@
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:background="#c9f0be" />
+                android:background="@{model.personsFragmentChosen ? @android:color/black : @android:color/transparent}" />
             <View
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
-                android:layout_weight="1"/>
+                android:layout_weight="1"
+                android:background="@{model.mapFragmentChosen ? @android:color/black : @android:color/transparent}"/>
 
         </LinearLayout>
 
@@ -61,7 +62,8 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:id="@+id/fragment_view_pager"
-            android:setAdapter="@{model.getVPFragmentsAdapter}"/>
+            android:setAdapter="@{model.getVPFragmentsAdapter}"
+            android:addOnPageChangeListener="@{model.getOnPageChangeListener}"/>
 
     </LinearLayout>
 </layout>

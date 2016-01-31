@@ -12,4 +12,6 @@
     <dimen name="card_photo_height">300dp</dimen>
     <dimen name="card_label_size">20sp</dimen>
 
+    <dimen name="recycle_padding">20dp</dimen>
+
 </resources>

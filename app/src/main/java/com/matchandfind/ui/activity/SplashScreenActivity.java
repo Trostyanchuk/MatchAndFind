@@ -35,12 +35,23 @@ public class SplashScreenActivity extends BaseActivity {
     private SplashViewModel mSplashModel;
     private ActivitySplashBinding mBindingObject;
     private Subscription subscription;
+    private boolean continueLoading = true;
+    private int page = 0;
     private PersonsExtendedCallbackWrapper mPersonsExtendedCallback = new PersonsExtendedCallbackWrapper() {
         @Override
         public void onResult(String persons) {
             List<Person> personsList = JSONUtil.getPersonsListFromJSOSNStr(persons);
-            dbManager.savePersons(personsList);
-            openResultsActivity();
+            if (personsList != null && personsList.size() > 0) {
+                if (page == 0) dbManager.clearDB();
+                dbManager.savePersons(personsList);
+            }
+            if (!continueLoading) {
+                openResultsActivity();
+            } else {
+                continueLoading = false;
+                page++;
+                networkManager.getPersonsJSON(page, this);
+            }
         }
 
         @Override
@@ -51,7 +62,7 @@ public class SplashScreenActivity extends BaseActivity {
     private RefreshSuccessCallbackWrapper mSuccessCallback = new RefreshSuccessCallbackWrapper() {
         @Override
         public void onSuccess() {
-            networkManager.getPersonsJSON(mPersonsExtendedCallback);
+            networkManager.getPersonsJSON(page, mPersonsExtendedCallback);
         }
     };
     private SplashViewModel.GenerationActionListener mGeneratorActionListener = new SplashViewModel.GenerationActionListener() {
@@ -64,12 +75,15 @@ public class SplashScreenActivity extends BaseActivity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        MatchAndFindApp.getInstance().getComponent().inject(this);
         mBindingObject = DataBindingUtil.setContentView(this, R.layout.activity_splash);
         mSplashModel = new SplashViewModel(mGeneratorActionListener);
         mBindingObject.setModel(mSplashModel);
 
         if (PreferencesUtil.alreadyLoggedIn(this)) {
             openResultsActivity();
+        } else {
+            PreferencesUtil.markLoginAsFirstIfNotMarked(this);
         }
     }
 

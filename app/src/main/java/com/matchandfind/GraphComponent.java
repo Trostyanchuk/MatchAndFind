@@ -4,6 +4,8 @@ package com.matchandfind;
 import com.matchandfind.database.DBManager;
 import com.matchandfind.ui.activity.ResultsActivity;
 import com.matchandfind.ui.activity.SplashScreenActivity;
+import com.matchandfind.ui.fragment.MapsFragment;
+import com.matchandfind.ui.fragment.PersonFragment;
 import com.matchandfind.ui.model.SplashViewModel;
 
 import javax.inject.Singleton;
@@ -20,5 +22,7 @@ public interface GraphComponent {
 
     void inject(ResultsActivity activity);
 
-    void inject(DBManager manager);
+    void inject(PersonFragment fragment);
+
+    void inject(MapsFragment fragment);
 }

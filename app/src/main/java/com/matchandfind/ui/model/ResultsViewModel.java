@@ -3,22 +3,40 @@ package com.matchandfind.ui.model;
 import android.databinding.BaseObservable;
 import android.databinding.Bindable;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.view.ViewPager;
 import android.view.View;
 
 import com.matchandfind.BR;
 import com.matchandfind.model.Person;
 import com.matchandfind.ui.adapter.VPFragmentsAdapter;
-import com.matchandfind.ui.fragment.listeners.OnUpdatePersonsListListener;
-
-import java.util.List;
+import com.matchandfind.ui.fragment.listener.OnPersonsUpdatesListeners;
 
 public class ResultsViewModel extends BaseObservable {
 
-    private boolean personsFragmentChosen;
-    private boolean mapFragmentChosen;
+    private boolean personsFragmentChosen = true;
+    private boolean mapFragmentChosen = false;
 
     private VPFragmentsAdapter mVPFragmentsAdapter;
     private ItemChangeListener mItemChangeListener;
+
+    private ViewPager.OnPageChangeListener onPageChangeListener = new ViewPager.OnPageChangeListener() {
+        @Override
+        public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+        }
+
+        @Override
+        public void onPageSelected(int position) {
+            if (position == 0) {
+                setUserTabUI();
+            } else if (position == 1) {
+                setMapTabUI();
+            }
+        }
+
+        @Override
+        public void onPageScrollStateChanged(int state) {
+        }
+    };
 
     public ResultsViewModel(FragmentManager fragmentManager, ItemChangeListener listener) {
         this.mVPFragmentsAdapter = new VPFragmentsAdapter(fragmentManager);
@@ -26,15 +44,23 @@ public class ResultsViewModel extends BaseObservable {
     }
 
     public void onUsersClick(View view) {
-        setMapFragmentChosen(false);
-        setPersonsFragmentChosen(true);
+        setUserTabUI();
         setTabItem(0);
     }
 
-    public void onMapClick(View view) {
+    public void setUserTabUI() {
         setMapFragmentChosen(false);
         setPersonsFragmentChosen(true);
+    }
+
+    public void onMapClick(View view) {
+        setMapTabUI();
         setTabItem(1);
+    }
+
+    public void setMapTabUI() {
+        setMapFragmentChosen(true);
+        setPersonsFragmentChosen(false);
     }
 
     private void setTabItem(int newIndex) {
@@ -67,9 +93,17 @@ public class ResultsViewModel extends BaseObservable {
         return mVPFragmentsAdapter;
     }
 
-    public void updateFragmentsWithList(List<Person> persons) {
-        ((OnUpdatePersonsListListener) mVPFragmentsAdapter.getItem(0)).onPersonsListUpdated(persons);
-        ((OnUpdatePersonsListListener) mVPFragmentsAdapter.getItem(1)).onPersonsListUpdated(persons);
+    public ViewPager.OnPageChangeListener getOnPageChangeListener() {
+        return onPageChangeListener;
+    }
+
+    public void updateFragmentsWithItem(Person person) {
+        ((OnPersonsUpdatesListeners) mVPFragmentsAdapter.getItem(0)).onPersonUpdate(person);
+        ((OnPersonsUpdatesListeners) mVPFragmentsAdapter.getItem(1)).onPersonUpdate(person);
+    }
+
+    public void notifyMapReloadList() {
+        ((OnPersonsUpdatesListeners) mVPFragmentsAdapter.getItem(1)).onListUpdate();
     }
 
     public interface ItemChangeListener {

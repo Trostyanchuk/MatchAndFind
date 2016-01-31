@@ -8,13 +8,15 @@ import org.testpackage.test_sdk.android.testlib.API;
 
 public class MatchAndFindApp extends Application {
 
+    private static MatchAndFindApp mInstance;
+
     private GraphComponent mComponent;
 
     @Override
     public void onCreate() {
         super.onCreate();
 
-        PreferencesUtil.markLoginAsFirstIfNotMarked(this);
+        mInstance = this;
 
         initApi();
 
@@ -29,5 +31,9 @@ public class MatchAndFindApp extends Application {
 
     public GraphComponent getComponent() {
         return mComponent;
+    }
+
+    public static MatchAndFindApp getInstance() {
+        return mInstance;
     }
 }

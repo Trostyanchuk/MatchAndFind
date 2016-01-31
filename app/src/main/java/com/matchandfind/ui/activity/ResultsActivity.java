@@ -4,30 +4,26 @@ import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.util.Log;
 
+import com.google.gson.Gson;
+import com.matchandfind.MatchAndFindApp;
 import com.matchandfind.R;
 import com.matchandfind.database.IDBManager;
 import com.matchandfind.databinding.ActivityResultsBinding;
 import com.matchandfind.model.Person;
+import com.matchandfind.network.APIStates;
 import com.matchandfind.network.INetworkManager;
 import com.matchandfind.ui.model.ResultsViewModel;
 
-import java.util.List;
+import org.testpackage.test_sdk.android.testlib.services.UpdateService;
 
 import javax.inject.Inject;
 
-import rx.Observable;
-import rx.Observer;
-import rx.Subscriber;
-import rx.Subscription;
-import rx.schedulers.Schedulers;
-
-public class ResultsActivity extends BaseActivity implements Observer {
+public class ResultsActivity extends BaseActivity implements FragmentActionsListener{
 
     @Inject
-    INetworkManager networkManager;
-
+    INetworkManager mNetworkManager;
     @Inject
-    IDBManager dbManager;
+    IDBManager mDBManager;
 
     private ActivityResultsBinding mBindingObject;
     private ResultsViewModel mModel;
@@ -37,13 +33,23 @@ public class ResultsActivity extends BaseActivity implements Observer {
             mBindingObject.fragmentViewPager.setCurrentItem(newIndex);
         }
     };
+    private UpdateService.UpdateServiceListener mUpdateServiceListener = new UpdateService.UpdateServiceListener() {
+        @Override
+        public void onChanges(String person) {
+            Person updatedPerson = new Gson().fromJson(person, Person.class);
 
-    private Subscription mSubscription;
-    private List<Person> mPersonsList;
+            Log.d("TAG", "updated " + updatedPerson.getId() + ", " + updatedPerson.getStatus());
+            if (updatedPerson.getStatus().equals(APIStates.REMOVED)) {
+                mDBManager.removePerson(updatedPerson.getId());
+            }
+            mModel.updateFragmentsWithItem(updatedPerson);
+        }
+    };
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        MatchAndFindApp.getInstance().getComponent().inject(this);
         mBindingObject = DataBindingUtil.setContentView(this, R.layout.activity_results);
         mModel = new ResultsViewModel(getSupportFragmentManager(), mItemChangeListener);
         mBindingObject.setModel(mModel);
@@ -52,43 +58,17 @@ public class ResultsActivity extends BaseActivity implements Observer {
     @Override
     public void onStart() {
         super.onStart();
-        if (mSubscription != null && mSubscription.isUnsubscribed()) {
-            subscribeToResults();
-        }
+        mNetworkManager.subscribeUpdates(mUpdateServiceListener);
     }
 
     @Override
     public void onPause() {
         super.onPause();
-        if (mSubscription != null && !mSubscription.isUnsubscribed()) {
-            mSubscription.unsubscribe();
-        }
-    }
-
-    private void subscribeToResults() {
-        mSubscription = Observable.create(new Observable.OnSubscribe<Object>() {
-            @Override
-            public void call(Subscriber<? super Object> subscriber) {
-                mPersonsList = dbManager.getPersons();
-                if (mPersonsList != null) {
-                    mModel.updateFragmentsWithList(mPersonsList);
-                }
-            }
-        }).subscribeOn(Schedulers.newThread()).subscribe(this);
+        mNetworkManager.unSubscribeUpdates();
     }
 
     @Override
-    public void onCompleted() {
-        Log.d("", "");
-    }
-
-    @Override
-    public void onError(Throwable e) {
-        Log.d("", "");
-    }
-
-    @Override
-    public void onNext(Object o) {
-        Log.d("", "");
+    public void updateList() {
+        mModel.notifyMapReloadList();
     }
 }
